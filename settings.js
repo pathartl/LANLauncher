@@ -1,24 +1,28 @@
+const fs = require('fs');
+
 class Settings {
     constructor() {
         this.config = {};
+        this.configPath = __dirname + '/config.json';
         this.loadConfig();
     }
 
     loadConfig() {
-        var path = __dirname + '/config.json';
+    	var configPath = this.configPath;
         var defaults = this.getDefaultConfig();
 
         try {
             // Try to load config from file
-            fs.openSync(path, 'r+');
+            fs.openSync(configPath, 'r+');
 
-            var data = fs.readFileSync(path);
+            var data = fs.readFileSync(configPath);
 
             this.config = JSON.parse(data);
         } catch (err) {
             // If errored, try making config and write the defaults
             try {
-                var fd = fs.openSync(path, 'w+');
+
+                //var fd = fs.openSync(configPath, 'w+');
 
                 console.log('No config file found, creating from defaults');
 
@@ -33,7 +37,7 @@ class Settings {
 
     writeConfig() {
         try {
-            fs.writeFileSync(path, JSON.stringify(this.config, null, 4));
+            fs.writeFileSync(this.configPath, JSON.stringify(this.config, null, 4));
 
             console.log('Wrote new config file');
         } catch (err) {

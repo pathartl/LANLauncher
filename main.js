@@ -1,5 +1,5 @@
-const electron = require('electron')
-const fs = require('fs')
+const electron = require('electron');
+const fs = require('fs');
 var Settings = require('./settings.js');
 var settings = new Settings();
 // Module to control application life.
