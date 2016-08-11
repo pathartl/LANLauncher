@@ -1,76 +1,13 @@
 const electron = require('electron');
-const fs = require('fs');
-const exec = require('child_process').execFile;
 
-var Settings = require('./settings.js');
-var settings = new Settings();
 // Module to control application life.
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-const gamesDir = __dirname + '/games';
-const configName = 'game.json';
-
-class Game {
-    constructor(gameName) {
-        this._gameName = gameName;
-        this._gameConfigPath = settings.getGameConfigPath(this._gameName);
-        this._gamePath = settings.getGamePath(this._gameName);
-        this.config = this.getGameConfig();
-    }
-
-    getGameConfig() {
-        try {
-            fs.openSync(this._gameConfigPath, 'r+');
-
-            var data = fs.readFileSync(this._gameConfigPath);
-
-            return JSON.parse(data);
-        } catch (err) {
-            console.log('Error: Could not read game config file located at ' + this._gameConfigPath);
-        }
-    }
-
-    launchGame() {
-        var command = this._gamePath + '/' + this.config.executable;
-        log('Launching ' + command);
-        exec(command);
-    }
-}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-
-function log(string) {
-    // Add actual log output to file
-    console.log(string);
-}
-
-function listInstalledGames() {
-    var games = new Array();
-
-    console.log(settings.getGamesDirectory());
-
-    var directories = fs.readdirSync(settings.getGamesDirectory());
-
-    directories.forEach(function(file) {
-        if (fs.statSync(settings.getGamePath(file)).isDirectory()) {
-            try {
-                fs.statSync(settings.getGameConfigPath(file));
-
-                log('Game found: ' + file);
-                games.push(file);
-            }
-
-            catch (e) {
-                log('Not a valid game: ' + file);
-            }
-        }
-    });
-
-    return games;
-}
 
 function createWindow () {
     // Create the browser window.
@@ -80,18 +17,7 @@ function createWindow () {
     mainWindow.loadURL(`file://${__dirname}/index.html`)
 
     // Open the DevTools.
-    //mainWindow.webContents.openDevTools()
-
-    var games = new Array();
-    var gameNames = listInstalledGames();
-
-    gameNames.forEach(function(gameName) {
-        games.push(new Game(gameName));
-    });
-
-    games[0].launchGame();
-
-    console.log(games);
+    mainWindow.webContents.openDevTools()
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {

@@ -74,7 +74,7 @@ class Settings {
     }
 
     getGameConfigPath(gameName) {
-        return this.config.gamesDir + '/' + gameName + '/' + this.config.gameConfigName;
+        return this.getGamesDirectory() + '/' + gameName + '/' + this.config.gameConfigName;
     }
 }
 
