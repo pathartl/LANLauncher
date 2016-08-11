@@ -1,5 +1,7 @@
 const electron = require('electron');
 const fs = require('fs');
+const exec = require('child_process').execFile;
+
 var Settings = require('./settings.js');
 var settings = new Settings();
 // Module to control application life.
@@ -9,22 +11,30 @@ const BrowserWindow = electron.BrowserWindow
 const gamesDir = __dirname + '/games';
 const configName = 'game.json';
 
-class File {
-    constructor() {
-        this.settings = new Settings();
-        this.gamesDir = __dirname + '/games';
+class Game {
+    constructor(gameName) {
+        this._gameName = gameName;
+        this._gameConfigPath = settings.getGameConfigPath(this._gameName);
+        this._gamePath = settings.getGamePath(this._gameName);
+        this.config = this.getGameConfig();
     }
 
-    getGamesDirectory() {
-        return gamesDir;
+    getGameConfig() {
+        try {
+            fs.openSync(this._gameConfigPath, 'r+');
+
+            var data = fs.readFileSync(this._gameConfigPath);
+
+            return JSON.parse(data);
+        } catch (err) {
+            console.log('Error: Could not read game config file located at ' + this._gameConfigPath);
+        }
     }
 
-    getGamePath(gameName) {
-        return gamesDir + '/' + gameName;
-    }
-
-    getGameConfigPath(gameName) {
-        return gamesDir + '/' + gameName + '/' + configName;
+    launchGame() {
+        var command = this._gamePath + '/' + this.config.executable;
+        log('Launching ' + command);
+        exec(command);
     }
 }
 
@@ -40,12 +50,14 @@ function log(string) {
 function listInstalledGames() {
     var games = new Array();
 
-    var directories = fs.readdirSync(getGamesDirectory());
+    console.log(settings.getGamesDirectory());
+
+    var directories = fs.readdirSync(settings.getGamesDirectory());
 
     directories.forEach(function(file) {
-        if (fs.statSync(getGamePath(file)).isDirectory()) {
+        if (fs.statSync(settings.getGamePath(file)).isDirectory()) {
             try {
-                fs.statSync(getGameConfigPath(file));
+                fs.statSync(settings.getGameConfigPath(file));
 
                 log('Game found: ' + file);
                 games.push(file);
@@ -70,7 +82,16 @@ function createWindow () {
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
 
-    console.log(settings);
+    var games = new Array();
+    var gameNames = listInstalledGames();
+
+    gameNames.forEach(function(gameName) {
+        games.push(new Game(gameName));
+    });
+
+    games[0].launchGame();
+
+    console.log(games);
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {

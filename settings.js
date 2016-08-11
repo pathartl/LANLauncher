@@ -21,9 +21,6 @@ class Settings {
         } catch (err) {
             // If errored, try making config and write the defaults
             try {
-
-                //var fd = fs.openSync(configPath, 'w+');
-
                 console.log('No config file found, creating from defaults');
 
                 this.config = defaults;
@@ -58,6 +55,8 @@ class Settings {
         if (directory.indexOf('./') === 0) {
             directory = __dirname + directory.substr(1);
         }
+
+        return directory;
     }
 
     setGamesDirectory(directory) {
@@ -71,7 +70,7 @@ class Settings {
     }
 
     getGamePath(gameName) {
-        return this.config.gamesDir + '/' + gameName;
+        return this.getGamesDirectory() + '/' + gameName;
     }
 
     getGameConfigPath(gameName) {
