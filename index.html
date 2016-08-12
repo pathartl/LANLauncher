@@ -4,9 +4,46 @@
         <meta charset="UTF-8">
         <title>Hello World!</title>
         <script>window.$ = window.jQuery = require('./jquery.min.js');</script>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="icons/css/material-design-iconic-font.min.css">
+
+        <script>
+            document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+            ':35729/livereload.js?snipver=1"></' + 'script>')
+        </script>
     </head>
     <body>
-        <div class="game-list"></div>
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-action-buttons">
+                    <div class="btn window-action-button window-action-button--maximize"><i class="zmdi zmdi-window-minimize"></i></div>
+                    <div class="btn window-action-button window-action-button--minimize"><i class="zmdi zmdi-window-maximize"></i></div>
+                    <div class="btn window-action-button window-action-button--close"><i class="zmdi zmdi-close"></i></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="game-filter"></div>
+                <div class="game-list">
+                    <script id="game-list-template" type="text/x-handlebars-template">
+                        {{#each games}}
+                            <div class="game" game-name="{{_gameName}}">
+                                {{#if _coverPath}}
+                                    <div class="game-cover">
+                                        <span>
+                                            <img src="{{_coverPath}}" alt="{{config.title}}">
+                                        </span>
+                                    </div>
+                                {{else}}
+                                    <div class="game-cover game-cover--missing">
+                                        {{config.title}}
+                                    </div>
+                                {{/if}}
+                            </div>
+                        {{/each}}
+                    </script>
+                </div>
+            </div>
+        </div>
 
         <script src="renderer.js"></script>
     </body>

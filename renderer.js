@@ -1,8 +1,11 @@
 const fs = require('fs');
-const exec = require('child_process').execFile;
+const exec = require('child_process').exec;
 
 var Settings = require('./settings.js');
 var settings = new Settings();
+
+const Handlebars = require('handlebars');
+const _ = require('lodash');
 
 const gamesDir = __dirname + '/games';
 const configName = 'game.json';
@@ -13,6 +16,8 @@ class Game {
         this._gameConfigPath = settings.getGameConfigPath(this._gameName);
         this._gamePath = settings.getGamePath(this._gameName);
         this.config = this.getGameConfig();
+
+        this._coverPath = this.getCoverPath();
     }
 
     getGameConfig() {
@@ -30,9 +35,35 @@ class Game {
     }
 
     launchGame() {
-        var command = this._gamePath + '/' + this.config.executable;
-        log('Launching ' + command);
-        exec(command);
+    	var gamePath = this._gamePath;
+        var command = '"' + gamePath + '/' + this.config.executable + '"';
+
+        if (Array.isArray(this.config.arguments)) {
+        	var args = this.config.arguments;
+
+        	args.forEach(function(arg, i) {
+        		if (arg.indexOf('./') == 0) {
+        			args[i] = '"' + gamePath + arg.substr(1) + '"';
+        		}
+
+        		args[i] = args[i].replace('%GAMEDIR%', '"' + gamePath + '"');
+        	});
+
+        	command = command + ' ' + args.join(' ');
+        }
+        
+    	log('Launching ' + command);
+
+    	exec(command);
+    }
+
+    getCoverPath() {
+    	try {
+    		fs.statSync(this._gamePath + '/cover.jpg');
+    		return 'file://' + this._gamePath + '/cover.jpg';
+    	} catch (err) {
+    		return false;
+    	}
     }
 }
 
@@ -66,24 +97,54 @@ function listInstalledGames() {
     return games;
 }
 
-var games = new Array();
-var gameNames = listInstalledGames();
+function compileTemplate(templateSelector, data) {
+	var source = $(templateSelector).html();
+	var template = Handlebars.compile(source);
 
-gameNames.forEach(function(gameName) {
-    games.push(new Game(gameName));
-});
+	var html = template(data);
 
-games.forEach(function(game, i) {
-	console.log(game.config.title);
-	var gameLink = $('<div />', {
-		'class': 'game',
-		'game': game.config.title,
-		text: game.config.title
+	return html;
+}
+
+function sortGamesAlphabetically(games) {
+	return _.orderBy(games, function(game) {
+		if (typeof game.config.sortTitle == 'string' && game.config.sortTitle.length > 0) {
+			return game.config.sortTitle;
+		} else {
+			return game.config.title;
+		}
+	}, ['asc']);
+}
+
+function enableGameListInteractions() {
+	$('.game-list .game').on('dblclick', function() {
+		var gameName = $(this).attr('game-name');
+
+		games.forEach(function(game) {
+			if (game._gameName == gameName) {
+				game.launchGame();
+			}
+		});
+	});
+}
+
+function updateGameList() {
+	var games = new Array();
+	var gameNames = listInstalledGames();
+
+	gameNames.forEach(function(gameName) {
+	    games.push(new Game(gameName));
 	});
 
-	gameLink.on('click', function() {
-		game.launchGame();
-	});
+	games = sortGamesAlphabetically(games);
 
-	$('.game-list').append(gameLink);
-});
+	var templateHtml = compileTemplate('#game-list-template', {games: games});
+	console.log(templateHtml);
+
+	$('.game-list').html(templateHtml);
+
+	return games;
+}
+
+var games = updateGameList();
+enableGameListInteractions();

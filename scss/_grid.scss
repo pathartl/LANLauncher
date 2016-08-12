@@ -1,0 +1,7 @@
+$num-columns: 12;
+
+@for $i from 1 to $num-columns {
+  [col="#{$i}"] {
+  	width: $i / $num-columns;
+  }
+}
