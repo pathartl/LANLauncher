@@ -1,5 +1,6 @@
 const fs = require('fs');
 const exec = require('child_process').exec;
+const remote = require('electron').remote;
 
 var Settings = require('./settings.js');
 var settings = new Settings();
@@ -46,15 +47,19 @@ class Game {
         			args[i] = '"' + gamePath + arg.substr(1) + '"';
         		}
 
-        		args[i] = args[i].replace('%GAMEDIR%', '"' + gamePath + '"');
+        		if (args[i].indexOf('%GAMEDIR%') != -1) {
+        			args[i] = '"' + args[i].replace('%GAMEDIR%', gamePath) + '"';
+        		}
         	});
 
         	command = command + ' ' + args.join(' ');
         }
-        
+
     	log('Launching ' + command);
 
-    	exec(command);
+    	exec(command, {
+    		cwd: gamePath
+    	});
     }
 
     getCoverPath() {
@@ -146,5 +151,37 @@ function updateGameList() {
 	return games;
 }
 
+function enableWindowInteractionButtons() {
+	$(document).ready(function() {
+		var window = remote.getCurrentWindow();
+
+		$('.window-action-button--maximize').on('click', function() {
+			$('.window-action-button--maximize').addClass('hidden');
+			$('.window-action-button--restore').removeClass('hidden');
+			window.maximize();
+		});
+
+		$('.window-action-button--restore').on('click', function() {
+			$('.window-action-button--maximize').removeClass('hidden');
+			$('.window-action-button--restore').addClass('hidden');
+			window.unmaximize();
+		});
+
+		$('.window-action-button--minimize').on('click', function() {
+			window.minimize();
+		});
+
+		$('.window-action-button--close').on('click', function() {
+			window.close();
+		});
+
+		$(window).on('resize', function() {
+			$('.window-action-button--maximize').removeClass('hidden');
+			$('.window-action-button--restore').addClass('hidden');
+		});
+	});
+}
+
+enableWindowInteractionButtons();
 var games = updateGameList();
 enableGameListInteractions();

@@ -9,13 +9,23 @@
           user-select: none;
   cursor: default; }
 
+.hidden {
+  display: none; }
+
 .window-titlebar {
   height: 32px;
   background: rgba(0, 0, 0, 0.9);
-  -webkit-app-region: drag;
   color: #282B2D;
   position: relative;
   z-index: 1000; }
+
+.window-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 96px;
+  bottom: 0;
+  -webkit-app-region: drag; }
 
 .window-action-buttons {
   display: -webkit-box;

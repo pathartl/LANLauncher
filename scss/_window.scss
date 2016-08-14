@@ -7,10 +7,18 @@ $scrollbar-margin: 10px;
 	&-titlebar {
 		height: $titlebar-height;
 		background: rgba(0, 0, 0, .9);
-		-webkit-app-region: drag;
 		color: $dark-gray;
 		position: relative;
 		z-index: 1000;
+	}
+
+	&-title {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: $action-button-width * 3;
+		bottom: 0;
+		-webkit-app-region: drag;
 	}
 
 	&-action-buttons {
