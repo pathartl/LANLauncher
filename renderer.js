@@ -11,6 +11,14 @@ const _ = require('lodash');
 const gamesDir = __dirname + '/games';
 const configName = 'game.json';
 
+Handlebars.registerHelper('equals', function (a, b, opts) {
+	if (a == b) {
+		return opts.fn(this);
+	} else {
+		return opts.inverse(this);
+	}
+});
+
 class Game {
     constructor(gameName) {
         this._gameName = gameName;
@@ -144,11 +152,110 @@ function updateGameList() {
 	games = sortGamesAlphabetically(games);
 
 	var templateHtml = compileTemplate('#game-list-template', {games: games});
-	console.log(templateHtml);
 
 	$('.game-list').html(templateHtml);
 
 	return games;
+}
+
+function getAllGameYears() {
+	var years = new Array();
+
+	games.forEach(function(game) {
+		if (_.isNumber(game.config.year)) {
+			years.push({value: game.config.year});
+		}
+	});
+
+	years = _.uniqBy(years, 'value');
+
+	return _.sortBy(years, 'value');
+}
+
+function getAllGameGenres() {
+	var genres = new Array();
+
+	games.forEach(function(game) {
+		if (_.isArray(game.config.genre)) {
+			genres = _.concat(genres, game.config.genre);
+		} else if (_.isString(game.config.genre)) {
+			genres.push(game.config.genre);
+		}
+	});
+
+	// Make it fit our needs for Handlebars
+	genres.forEach(function(genre, i) {
+		genres[i] = {value: genre}
+	});
+
+	genres = _.uniqBy(genres, 'value');
+
+	return _.sortBy(genres, 'value');
+}
+
+function getAllGamePlayerNums() {
+	var nums = new Array();
+
+	games.forEach(function(game) {
+		if (_.isNumber(game.config.multiplayer.players)) {
+			nums.push({value: game.config.multiplayer.players});
+		}
+	});
+
+	nums = _.uniqBy(nums, 'value');
+
+	return _.sortBy(nums, 'value');
+}
+
+function renderGameFilter() {
+	var filter = new Array();
+
+	filter.push({
+		title: 'Year',
+		name: 'year',
+		type: 'select',
+		options: getAllGameYears()
+	});
+
+	filter.push({
+		title: 'Genre',
+		name: 'genre',
+		type: 'select',
+		options: getAllGameGenres()
+	});
+
+	filter.push({
+		title: 'Multiplayer Type',
+		name: 'multiplayer-type',
+		type: 'checkbox',
+		options: [
+			{
+				name: 'TCP/IP',
+				value: 'tcpip'
+			},
+			{
+				name: 'IPX',
+				value: 'ipx'
+			},
+			{
+				name: 'Local',
+				value: 'local'
+			}
+		]
+	});
+
+	filter.push({
+		title: 'Number of Players',
+		name: 'player-num',
+		//type: 'range',
+		type: 'select',
+		options: getAllGamePlayerNums()
+	});
+
+	var templateHtml = compileTemplate('#game-filter-template', {filters: filter})
+	console.log(templateHtml);
+
+	$('.game-filter').html(templateHtml);
 }
 
 function enableWindowInteractionButtons() {
@@ -185,3 +292,4 @@ function enableWindowInteractionButtons() {
 enableWindowInteractionButtons();
 var games = updateGameList();
 enableGameListInteractions();
+renderGameFilter();
