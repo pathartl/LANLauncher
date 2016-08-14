@@ -30,17 +30,20 @@ class Game {
     }
 
     getGameConfig() {
-        //try {
-            fs.openSync(this._gameConfigPath, 'r+');
+        try {
+        	// Make sure we can open it for read
+            var fd = fs.openSync(this._gameConfigPath, 'r+');
+            // Close!
+            fs.closeSync(fd);
 
             var data = fs.readFileSync(this._gameConfigPath, 'utf8');
 
             console.log(data);
 
             return JSON.parse(data);
-        // } catch (err) {
-        //     console.log('Error: Could not read game config file located at ' + this._gameConfigPath);
-        // }
+        } catch (err) {
+            console.log('Error: Could not read game config file located at ' + this._gameConfigPath);
+        }
     }
 
     launchGame() {
