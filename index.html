@@ -24,69 +24,65 @@
                 </div>
             </div>
             <div class="window-content">
-                <div class="game-filter">
-                    <script id="game-filter-template" type="text/x-handlebars-template">
-                        {{#each filters}}
-                            <div class="filter">
-                                <h3>{{title}}</h3>
-                                {{#equals type "range"}}
-                                    <input type="range" name="{{name}}" list="range-{{name}}">
-                                    <datalist id="range-{{name}}">
-                                        {{#each options}}
-                                            <option>{{value}}</option>
-                                        {{/each}}
-                                    </datalist>
-                                {{/equals}}
-                                {{#equals type "select"}}
-                                    <select name="{{name}}">
-                                        <option value=""></option>
-                                        {{#each options}}
-                                            <option value="{{value}}">{{value}}</option>
-                                        {{/each}}
-                                    </select>
-                                {{/equals}}
-                                {{#equals type "checkbox"}}
-                                    <ul>
-                                        {{#each options}}
-                                        <li>
-                                            <input type="checkbox" id="{{name}}-{{value}}">
-                                            <label for="{{name}}-{{value}}">{{name}}</label>
-                                        </li>
-                                        {{/each}}
-                                    </ul>
-                                {{/equals}}
-                            </div>
-                            
-                        {{/each}}
-                    </script>
-                </div>
-                <div class="game-list">
-                    <script id="game-list-template" type="text/x-handlebars-template">
-                        {{#each games}}
-                            <div class="game" game-name="{{_gameName}}">
-                                {{#if _coverPath}}
-                                    <div class="game-cover">
-                                        <span>
-                                            <img src="{{_coverPath}}" alt="{{config.title}}">
-                                        </span>
-                                    </div>
-                                {{else}}
-                                    <div class="game-cover game-cover--missing">
-                                        {{config.title}}
-                                    </div>
-                                {{/if}}
-                            </div>
-                        {{/each}}
-                    </script>
-                </div>
+                <div class="game-filter"></div>
+                <div class="game-list"></div>
             </div>
         </div>
 
-        <script src="renderer.js"></script>
-    </body>
+        <script id="game-filter-template" type="text/x-handlebars-template">
+            {{#each filters}}
+                <div class="filter" name="{{name}}">
+                    <h3>{{title}}</h3>
+                    {{#equals type "range"}}
+                        <input type="range" name="{{name}}" list="range-{{name}}">
+                        <datalist id="range-{{name}}">
+                            {{#each options}}
+                                <option>{{value}}</option>
+                            {{/each}}
+                        </datalist>
+                    {{/equals}}
+                    {{#equals type "select"}}
+                        <select name="{{name}}">
+                            <option value=""></option>
+                            {{#each options}}
+                                <option value="{{value}}">{{value}}</option>
+                            {{/each}}
+                        </select>
+                    {{/equals}}
+                    {{#equals type "checkbox"}}
+                        <ul>
+                            {{#each options}}
+                            <li>
+                                <input type="checkbox" id="{{name}}-{{value}}" name="{{value}}">
+                                <label for="{{name}}-{{value}}">{{name}}</label>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    {{/equals}}
+                </div>
+                
+            {{/each}}
+        </script>
 
-    <script>
-        // You can also require other files to run in this process
-        // require('./renderer.js')
-    </script>
+        <script id="game-list-template" type="text/x-handlebars-template">
+            {{#each games}}
+                <div class="game" game-name="{{_gameName}}">
+                    {{#if _coverPath}}
+                        <div class="game-cover">
+                            <span>
+                                <img src="{{_coverPath}}" alt="{{config.title}}">
+                            </span>
+                        </div>
+                    {{else}}
+                        <div class="game-cover game-cover--missing">
+                            {{config.title}}
+                        </div>
+                    {{/if}}
+                </div>
+            {{/each}}
+        </script>
+
+        <script src="renderer.js"></script>
+
+    </body>
 </html>

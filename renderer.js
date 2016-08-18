@@ -154,11 +154,15 @@ function updateGameList() {
 
 	games = sortGamesAlphabetically(games);
 
+	renderGameList(games);
+
+	return games;
+}
+
+function renderGameList(games) {
 	var templateHtml = compileTemplate('#game-list-template', {games: games});
 
 	$('.game-list').html(templateHtml);
-
-	return games;
 }
 
 function getAllGameYears() {
@@ -249,7 +253,7 @@ function renderGameFilter() {
 
 	filter.push({
 		title: 'Number of Players',
-		name: 'player-num',
+		name: 'players',
 		//type: 'range',
 		type: 'select',
 		options: getAllGamePlayerNums()
@@ -259,6 +263,117 @@ function renderGameFilter() {
 	console.log(templateHtml);
 
 	$('.game-filter').html(templateHtml);
+}
+
+function filterGamesByYear(games, year) {
+	return games.filter(function(game) {
+		return game.config.year == year || year == '';
+	});
+}
+
+function filterGamesByGenre(games, genre) {
+	return games.filter(function(game) {
+		if (genre == '') {
+			return true;
+		} else if (game.config.genre.indexOf(genre) != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+}
+
+function filterGamesByMultiplayerType(games, types) {
+	return games.filter(function(game) {
+		var typeIsIncluded = false;
+
+		if (types.length == 0) {
+			typeIsIncluded = true
+		} else {
+			types.forEach(function(type) {
+				try {
+					if (game.config.multiplayer.type[type] == true) {
+						typeIsIncluded = true;
+					}
+				} catch(err) {
+				}
+			});
+		}
+
+		return typeIsIncluded;
+	});
+}
+
+function filterGamesByPlayers(games, players) {
+	return games.filter(function(game) {
+		if (players == '') {
+			return true;
+		} else if (game.config.multiplayer.players >= parseInt(players)) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+}
+
+function filterGames() {
+	var filteredGames = games;
+
+	_.forOwn(gameFilter, function(value, filterName) {
+		switch (filterName) {
+			case 'year':
+				filteredGames = filterGamesByYear(filteredGames, value);
+				console.log(filteredGames);
+			break;
+
+			case 'genre':
+				filteredGames = filterGamesByGenre(filteredGames, value);
+				console.log(filteredGames);
+			break;
+
+			case 'multiplayer-type':
+				filteredGames = filterGamesByMultiplayerType(filteredGames, value);
+				console.log(filteredGames);
+			break;
+
+			case 'players':
+				filteredGames = filterGamesByPlayers(filteredGames, value);
+				console.log(filteredGames);
+			break;
+		}
+	});
+
+	renderGameList(filteredGames);
+}
+
+function enableFilterInteraction() {
+	var filters = $('.filter');
+
+	console.log(filters);
+
+	filters.each(function(i, filter) {
+		var inputs = $(filter).find('input, select');
+		var name = $(filter).attr('name');
+
+		$(inputs).on('change', function() {
+			var value = new Array();
+			inputs.each(function(i, input) {
+				if ($(input).attr('type') == 'checkbox') {
+					if ($(input).prop('checked')) {
+						value.push($(input).attr('name'));
+					}
+				} else {
+					value = $(input).val();
+				}
+			});
+
+			gameFilter[name] = value;
+
+			filterGames();
+
+			console.log(gameFilter);
+		});
+	});
 }
 
 function enableWindowInteractionButtons() {
@@ -294,5 +409,7 @@ function enableWindowInteractionButtons() {
 
 enableWindowInteractionButtons();
 var games = updateGameList();
+var gameFilter = {};
 enableGameListInteractions();
 renderGameFilter();
+enableFilterInteraction();
