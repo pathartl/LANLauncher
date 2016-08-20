@@ -1,4 +1,3 @@
-$titlebar-height: 32px;
 $action-button-width: 32px;
 $scrollbar-width: 12px;
 $scrollbar-margin: 10px;
@@ -41,33 +40,21 @@ $scrollbar-margin: 10px;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		overflow-y: scroll;
-
-		&::before {
-			content: '';
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background: radial-gradient(ellipse at center, rgba(255,255,255,0) 0%,rgba(0,0,0,.5) 100%);
-		}
 	}
-
-	::-webkit-scrollbar {
-	    width: $scrollbar-width + ($scrollbar-margin * 2);
-	}
-	 
-	// Fake margining around the bar by using background-clip
-	::-webkit-scrollbar-thumb {
-		background: rgba(0, 0, 0, .33);
-		border: $scrollbar-margin solid transparent;
-		background-clip: content-box;
-	}
-
-	// Add some fake margin to the top of the scrollbar by utilizing the buttons
-	&-content::-webkit-scrollbar-button:start {
-		height: $titlebar-height;
-	}
-
 }
+
+::-webkit-scrollbar {
+    width: $scrollbar-width + ($scrollbar-margin * 2);
+}
+ 
+// Fake margining around the bar by using background-clip
+::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, .33);
+	border: $scrollbar-margin solid transparent;
+	background-clip: content-box;
+}
+
+// Add some fake margin to the top of the scrollbar by utilizing the buttons
+// &-content::-webkit-scrollbar-button:start {
+// 	height: $titlebar-height;
+// }

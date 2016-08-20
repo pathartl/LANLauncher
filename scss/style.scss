@@ -1,3 +1,6 @@
+$filter-width: 200px;
+$titlebar-height: 32px;
+
 @import 'reset';
 @import 'colors';
 @import 'utility';
@@ -5,10 +8,12 @@
 @import 'grid';
 @import 'game';
 @import 'filter';
+@import 'launch-overlay';
 
 body,
 html {
 	background: $dark-gray;
+	font-family: 'Source Sans Pro', sans-serif;
 }
 
 html::after,

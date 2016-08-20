@@ -2,3 +2,5 @@ $white: #fff;
 $black: #000;
 $gray: #666;
 $dark-gray: #282B2D;
+$darker-gray: darken($dark-gray, 10%);
+$border-highlight: rgba(255, 255, 255, .1);

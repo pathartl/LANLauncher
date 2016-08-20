@@ -81,6 +81,57 @@ class Game {
     		return false;
     	}
     }
+
+    launchServer(port) {
+    	var gamePath = this._gamePath;
+    	var command = '"' + gamePath + '/' + this.config.multiplayer.server.executable + '"';
+
+    	if (Array.isArray(this.config.multiplayer.server.arguments)) {
+        	var args = this.config.multiplayer.server.arguments;
+
+        	args.forEach(function(arg, i) {
+        		if (args[i].indexOf('%PORT%') != -1) {
+        			console.log(port);
+        			args[i] = args[i].replace('%PORT%', port);
+        		}
+        	});
+
+        	command = command + ' ' + args.join(' ');
+        }
+
+        log('Starting server ' + command);
+
+        exec(command, {
+        	cwd: gamePath
+        });
+    }
+
+    joinServer(ip, port) {
+    	var gamePath = this._gamePath;
+    	var command = '"' + gamePath + '/' + this.config.multiplayer.client.executable + '"';
+
+    	if (Array.isArray(this.config.multiplayer.client.arguments)) {
+        	var args = this.config.multiplayer.client.arguments;
+
+        	args.forEach(function(arg, i) {
+        		if (args[i].indexOf('%PORT%') != -1) {
+        			args[i] = args[i].replace('%PORT%', port);
+        		}
+
+        		if (args[i].indexOf('%IP%') != -1) {
+        			args[i] = args[i].replace('%IP%', ip);
+        		}
+        	});
+
+        	command = command + ' ' + args.join(' ');
+        }
+
+        log('Joining server ' + command);
+
+        exec(command, {
+        	cwd: gamePath
+        });
+    }
 }
 
 function log(string) {
@@ -132,6 +183,22 @@ function sortGamesAlphabetically(games) {
 	}, ['asc']);
 }
 
+function showGameOverlay(game) {
+	var templateHtml = compileTemplate('#game-launch-overlay-template', {game: game});
+
+	$('.game-launch-overlay').html(templateHtml).show();
+
+	$('.game-launch-overlay [name="launch-server"]').click(function() {
+		game.launchServer($('.game-launch-overlay [name="server-port"]').val());
+	});
+
+	$('.game-launch-overlay [name="launch-client"]').click(function() {
+		var ip = $('.game-launch-overlay [name="client-ip"]').val();
+		var port = $('.game-launch-overlay [name="client-port"]').val();
+		game.joinServer(ip, port);
+	});
+}
+
 function enableGameListInteractions() {
 	$('.game-list .game').on('dblclick', function() {
 		var gameName = $(this).attr('game-name');
@@ -139,6 +206,14 @@ function enableGameListInteractions() {
 		games.forEach(function(game) {
 			if (game._gameName == gameName) {
 				game.launchGame();
+			}
+		});
+	}).on('click', function() {
+		var gameName = $(this).attr('game-name');
+
+		games.forEach(function(game) {
+			if (game._gameName == gameName) {
+				showGameOverlay(game);
 			}
 		});
 	});
@@ -163,6 +238,8 @@ function renderGameList(games) {
 	var templateHtml = compileTemplate('#game-list-template', {games: games});
 
 	$('.game-list').html(templateHtml);
+
+	enableGameListInteractions();
 }
 
 function getAllGameYears() {
@@ -410,6 +487,5 @@ function enableWindowInteractionButtons() {
 enableWindowInteractionButtons();
 var games = updateGameList();
 var gameFilter = {};
-enableGameListInteractions();
 renderGameFilter();
 enableFilterInteraction();

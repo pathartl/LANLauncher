@@ -8,8 +8,7 @@ $cover-ratio: 755 / 1080;
 
 	&::before {
 		content: '';
-		border: 1px solid $white;
-		opacity: .1;
+		border: 1px solid $border-highlight;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -40,6 +39,23 @@ $cover-ratio: 755 / 1080;
 	flex-wrap: wrap;
 	justify-content: space-around;
 	padding-top: 15px;
+	position: absolute;
+	top: $titlebar-height;
+	left: 0;
+	right: $filter-width;
+	bottom: 0;
+	overflow-y: scroll;
+
+	&::before {
+		content: '';
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: $filter-width;
+		bottom: 0;
+		background: radial-gradient(ellipse at center, rgba(255,255,255,0) 0%,rgba(0,0,0,.5) 100%);
+	}
+
 }
 
 .game {
