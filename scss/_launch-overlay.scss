@@ -1,0 +1,21 @@
+.game-launch-overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, .5);
+	z-index: 500;
+
+	&-window {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $white;
+		background: $darker-gray;
+		border: 1px solid $border-highlight;
+		outline: 1px solid $black;
+	}
+}
