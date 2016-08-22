@@ -77,5 +77,5 @@ function enableWindowInteractionButtons() {
 
 enableWindowInteractionButtons();
 GameList.updateGameList();
-//GameList.renderGameFilter();
-//GameList.enableFilterInteraction();
+GameList.renderGameFilter();
+GameList.enableFilterInteraction();

@@ -1,14 +1,14 @@
 const fs = require('fs');
 const Game = require('../models/game.js');
 
-class GameList {
+class GameListService {
     constructor(gameName) {
         this.games = new Array();
         this.gameNames = new Array();
         this.genres = new Array();
         this.years = new Array();
         this.maxPlayerNums = new Array();
-        this.gameFilter = new Array();
+        this.gameFilter = {};
     }
 
 	listInstalledGames() {
@@ -67,8 +67,12 @@ class GameList {
 
 
 
-	renderGameList() {
+	renderGameList(filteredGames) {
 		var games = this.games;
+
+		if (_.isArray(filteredGames)) {
+			games = filteredGames;
+		}
 
 		var templateHtml = compileTemplate('#game-list-template', {games: games});
 
@@ -249,19 +253,19 @@ class GameList {
 		_.forOwn(gameFilter, function(value, filterName) {
 			switch (filterName) {
 				case 'year':
-					filteredGames = this.filterGamesByYear(filteredGames, value);
+					filteredGames = GameList.filterGamesByYear(filteredGames, value);
 				break;
 
 				case 'genre':
-					filteredGames = this.filterGamesByGenre(filteredGames, value);
+					filteredGames = GameList.filterGamesByGenre(filteredGames, value);
 				break;
 
 				case 'multiplayer-type':
-					filteredGames = this.filterGamesByMultiplayerType(filteredGames, value);
+					filteredGames = GameList.filterGamesByMultiplayerType(filteredGames, value);
 				break;
 
 				case 'players':
-					filteredGames = this.filterGamesByPlayers(filteredGames, value);
+					filteredGames = GameList.filterGamesByPlayers(filteredGames, value);
 				break;
 			}
 		});
@@ -304,4 +308,4 @@ class GameList {
 
 }
 
-module.exports = GameList;
+module.exports = GameListService;
