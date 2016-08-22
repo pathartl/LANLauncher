@@ -50,12 +50,12 @@ class Game {
     	log('Launching ' + command);
 
     	var gameTitle = this.config.title;
-    	Chat.alertLaunchingGame(gameTitle);
+    	Status.launchingGame(gameTitle);
 
     	exec(command, {
     		cwd: gamePath
     	}, function() {
-    		Chat.alertClosingGame(gameTitle);
+    		Status.closingGame(gameTitle);
     	});
     }
 

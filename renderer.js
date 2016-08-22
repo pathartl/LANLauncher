@@ -17,6 +17,9 @@ const configName = 'game.json';
 var ChatService = require('./services/chat.js');
 var Chat = new ChatService();
 
+var StatusService = require('./services/status.js');
+var Status = new StatusService;
+
 Handlebars.registerHelper('equals', function (a, b, opts) {
 	if (a == b) {
 		return opts.fn(this);

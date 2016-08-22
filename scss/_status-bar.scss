@@ -1,0 +1,24 @@
+.status {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: $titlebar-height * -2;
+	height: $titlebar-height * 2;
+	background: $darker-gray;
+	border-top: 1px solid $border-highlight;
+	outline: 1px solid $black;
+	z-index: 3000;
+	color: $white;
+	transition: .25s bottom;
+
+	&-message {
+		position: absolute;
+		top: 50%;
+		left: 30px;
+		transform: translateY(-50%);
+	}
+
+	&.active {
+		bottom: 0;
+	}
+}

@@ -212,6 +212,28 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     outline: 1px solid #000; }
 
+.status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -64px;
+  height: 64px;
+  background: #101112;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  outline: 1px solid #000;
+  z-index: 3000;
+  color: #fff;
+  -webkit-transition: .25s bottom;
+  transition: .25s bottom; }
+  .status-message {
+    position: absolute;
+    top: 50%;
+    left: 30px;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%); }
+  .status.active {
+    bottom: 0; }
+
 body,
 html {
   background: #282B2D;
