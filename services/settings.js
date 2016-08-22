@@ -46,7 +46,14 @@ class Settings {
         return {
             'gameConfigName': 'game.json',
             'gamesDir': './games',
+            'chatServer': 'irc.freenode.net',
+            'chatChannels': ['#lanlauncher'],
+            'username': 'LANLauncher'
         }
+    }
+
+    getSetting(setting) {
+        return this.config[setting];
     }
 
     getGamesDirectory() {

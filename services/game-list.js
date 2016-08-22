@@ -44,28 +44,32 @@ class GameList {
 	}
 
 	enableGameListInteractions() {
+		var games = this.games;
+
 		$('.game-list .game').on('dblclick', function() {
 			var gameName = $(this).attr('game-name');
 
-			this.games.forEach(function(game) {
+			games.forEach(function(game) {
 				if (game._gameName == gameName) {
 					game.launchGame();
 				}
 			});
-		}).on('click', function() {
-			var gameName = $(this).attr('game-name');
+		// }).on('click', function() {
+		// 	var gameName = $(this).attr('game-name');
 
-			this.games.forEach(function(game) {
-				if (game._gameName == gameName) {
-					showGameOverlay(game);
-				}
-			});
+		// 	games.forEach(function(game) {
+		// 		if (game._gameName == gameName) {
+		// 			showGameOverlay(game);
+		// 		}
+		// 	});
 		});
 	}
 
+
+
 	renderGameList() {
 		var games = this.games;
-		
+
 		var templateHtml = compileTemplate('#game-list-template', {games: games});
 
 		$('.game-list').html(templateHtml);

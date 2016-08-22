@@ -14,6 +14,9 @@ const _ = require('lodash');
 const gamesDir = __dirname + '/games';
 const configName = 'game.json';
 
+var ChatService = require('./services/chat.js');
+var Chat = new ChatService();
+
 Handlebars.registerHelper('equals', function (a, b, opts) {
 	if (a == b) {
 		return opts.fn(this);

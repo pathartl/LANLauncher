@@ -1,4 +1,7 @@
 {
     "gameConfigName": "game.json",
-    "gamesDir": "M:/Games/PC"
+    "gamesDir": "M:/Games/PC",
+	"chatServer": "irc.freenode.net",
+	"chatChannels": ["#lanlauncher"],
+	"username": "LANLauncher"
 }
