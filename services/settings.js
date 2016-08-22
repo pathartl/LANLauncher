@@ -3,7 +3,7 @@ const fs = require('fs');
 class Settings {
     constructor() {
         this.config = {};
-        this.configPath = __dirname + '/../config.json';
+        this.configPath = __dirname + '/config.json';
         this.loadConfig();
     }
 
