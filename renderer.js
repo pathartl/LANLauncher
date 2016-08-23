@@ -18,7 +18,10 @@ var ChatService = require('./services/chat.js');
 var Chat = new ChatService();
 
 var StatusService = require('./services/status.js');
-var Status = new StatusService;
+var Status = new StatusService();
+
+var DistributionService = require('./services/distribution.js');
+var Distribution = new DistributionService();
 
 Handlebars.registerHelper('equals', function (a, b, opts) {
 	if (a == b) {
@@ -76,6 +79,4 @@ function enableWindowInteractionButtons() {
 }
 
 enableWindowInteractionButtons();
-GameList.updateGameList();
-GameList.renderGameFilter();
-GameList.enableFilterInteraction();
+Distribution.getMasterGameList();

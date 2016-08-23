@@ -7,11 +7,15 @@ class Chat {
     	this._channels = Settings.getSetting('chatChannels');
     	this.client;
 
-    	this.connect();
+    	//this.connect();
 
-		this.client.addListener('message', function (from, to, message) {
-	    	console.log(from + ' => ' + to + ': ' + message);
-		});
+		// this.client.addListener('message', function (from, to, message) {
+	 //    	console.log(from + ' => ' + to + ': ' + message);
+		// });
+
+		// this.client.addListener('error', function(message) {
+		//     console.log('error: ', message);
+		// });
     }
 
     connect() {
@@ -21,15 +25,15 @@ class Chat {
     }
 
     alertLaunchingGame(game) {
-    	this.client.action(this._channels[0], 'is playing ' + game);
+    	//this.client.action(this._channels[0], 'is playing ' + game);
     }
 
     alertClosingGame(game) {
-    	this.client.action(this._channels[0], 'stopped playing ' + game);
+    	//this.client.action(this._channels[0], 'stopped playing ' + game);
     }
 
     sendMessage(message) {
-    	this.client.say(this._channels[0], message);
+    	//this.client.say(this._channels[0], message);
     }
 }
 

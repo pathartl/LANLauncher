@@ -3,7 +3,7 @@ const fs = require('fs');
 class Settings {
     constructor() {
         this.config = {};
-        this.configPath = __dirname + '/config.json';
+        this.configPath = process.cwd() + '/config.json';
         this.loadConfig();
     }
 
@@ -60,7 +60,7 @@ class Settings {
         var directory = this.config.gamesDir;
 
         if (directory.indexOf('./') === 0) {
-            directory = __dirname + directory.substr(1);
+            directory = process.cwd() + directory.substr(1);
         }
 
         return directory;
@@ -68,7 +68,7 @@ class Settings {
 
     setGamesDirectory(directory) {
         if (directory.indexOf('./') === 0) {
-            directory = __dirname + directory.substr(1);
+            directory = process.cwd() + directory.substr(1);
         }
 
         this.config.gamesDir = directory;

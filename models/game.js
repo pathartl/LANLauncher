@@ -1,16 +1,23 @@
 const fs = require('fs');
+const http = require('http');
+const extract = require('extract-zip');
 
 class Game {
-    constructor(gameName) {
+    constructor(gameName, config) {
         this._gameName = gameName;
         this._gameConfigPath = Settings.getGameConfigPath(this._gameName);
         this._gamePath = Settings.getGamePath(this._gameName);
-        this.config = this.getGameConfig();
 
-        this._coverPath = this.getCoverPath();
+        if (_.isObject(config) && config.remoteFile === true) {
+        	this.config = config;
+        	this._coverPath = Distribution.getServerUrl() + config.coverFile;
+        } else {
+        	this.config = this.getLocalGameConfig();
+        	this._coverPath = this.getCoverPath();
+        }
     }
 
-    getGameConfig() {
+    getLocalGameConfig() {
         try {
         	// Make sure we can open it for read
             var fd = fs.openSync(this._gameConfigPath, 'r+');
@@ -57,6 +64,72 @@ class Game {
     	}, function() {
     		Status.closingGame(gameTitle);
     	});
+    }
+
+    checkIfGameIsInstalled() {
+    	var isInstalled = false;
+
+    	try {
+    		fs.statSync(this._gamePath);
+    		fs.statSync(this._gamePath + '/game.json');
+    		fs.statSync(this._gamePath + '/' + this.config.executable);
+
+    		isInstalled = true;
+    	} catch (err) {
+
+    	}
+
+    	if (isInstalled) {
+    		this.launchGame();
+    	} else {
+    		this.installGame();
+    	}
+    }
+
+    installGame() {
+    	this.downloadGame();
+    }
+
+    createGameDirectory() {
+    	fs.mkdirSync(this._gamePath);
+    }
+
+    extractGame() {
+    	console.log('Extracting "' + this.config.title + '"...');
+    	var source = this._gamePath + '/game.zip';
+    	var target = this._gamePath;
+
+    	extract(source, {
+    		dir: target
+    	}, function(err) {
+
+    	});
+    }
+
+    downloadGame(callback) {
+    	var game = this;
+    	var downloadUrl = Distribution.getServerUrl() + this.config.contentFile;
+    	var gameTitle = this.config.title;
+
+    	console.log('Downloading ' + gameTitle + ' from ' + downloadUrl);
+
+    	try {
+    		this.createGameDirectory();
+
+    		try {
+		    	var file = fs.createWriteStream(this._gamePath + '/game.zip');
+		    	var request = http.get(downloadUrl, function(response) {
+		    		response.pipe(file).on('close', function() {
+		    			console.log('Done downloading ' + gameTitle);
+		    			game.extractGame();
+		    		});
+		    	});
+    		} catch(err) {
+    			console.log('Could not download game!');
+    		}
+    	} catch(err) {
+    		console.log('Could not make game directory! - ' + this._gamePath);
+    	}
     }
 
     getCoverPath() {

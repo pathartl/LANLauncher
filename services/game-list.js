@@ -34,6 +34,7 @@ class GameListService {
 	}
 
 	sortGamesAlphabetically() {
+		console.log(this.games);
 		this.games = _.orderBy(this.games, function(game) {
 			if (typeof game.config.sortTitle == 'string' && game.config.sortTitle.length > 0) {
 				return game.config.sortTitle;
@@ -51,7 +52,7 @@ class GameListService {
 
 			games.forEach(function(game) {
 				if (game._gameName == gameName) {
-					game.launchGame();
+					game.checkIfGameIsInstalled();
 				}
 			});
 		// }).on('click', function() {
@@ -82,17 +83,24 @@ class GameListService {
 	}
 
 
-	updateGameList() {
+	updateGameList(gameConfigs) {
 		var games = new Array();
-		this.listInstalledGames();
 
-		this.gameNames.forEach(function(gameName) {
-		    games.push(new Game(gameName));
-		});
+		if (_.isArray(gameConfigs)) {
+			gameConfigs.forEach(function(gameConfig) {
+				games.push(new Game(gameConfig.folderName, gameConfig));
+			});
+		} else {
+			this.gameNames.forEach(function(gameName) {
+			    games.push(new Game(gameName));
+			});
+		}
 
 		this.games = games;
 		this.sortGamesAlphabetically();
 		this.renderGameList();
+		this.renderGameFilter();
+		this.enableFilterInteraction();
 	}
 
 	getAllGameGenres() {
