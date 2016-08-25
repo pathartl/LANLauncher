@@ -10,7 +10,9 @@ class Game {
 
         if (_.isObject(config) && config.remoteFile === true) {
         	this.config = config;
-        	this._coverPath = Distribution.getServerUrl() + config.coverFile;
+        	if (config.coverFile != false) {
+        		this._coverPath = Distribution.getServerUrl() + config.coverFile;
+        	}
         } else {
         	this.config = this.getLocalGameConfig();
         	this._coverPath = this.getCoverPath();
@@ -102,25 +104,40 @@ class Game {
     	extract(source, {
     		dir: target
     	}, function(err) {
-
+    		if (err) {
+    			console.log('Failed extracting game!');
+    		} else {
+    			console.log('Successfully extracted game!');
+    			// Delete downloaded zip file to save on disk space
+    			fs.unlinkSync(source);
+    		}
     	});
     }
 
     downloadGame(callback) {
     	var game = this;
-    	var downloadUrl = Distribution.getServerUrl() + this.config.contentFile;
-    	var gameTitle = this.config.title;
+    	var downloadUrl = Distribution.getServerUrl() + game.config.contentFile;
+    	var gameTitle = game.config.title;
 
     	console.log('Downloading ' + gameTitle + ' from ' + downloadUrl);
 
     	try {
-    		this.createGameDirectory();
+    		game.createGameDirectory();
 
     		try {
-		    	var file = fs.createWriteStream(this._gamePath + '/game.zip');
-		    	var request = http.get(downloadUrl, function(response) {
-		    		response.pipe(file).on('close', function() {
-		    			console.log('Done downloading ' + gameTitle);
+		    	var file = fs.createWriteStream(game._gamePath + '/game.zip');
+
+		    	var request = http.get(downloadUrl).on('response', function(response) {
+		    		var length = parseInt(response.headers['content-length'], 10);
+		    		var downloaded = 0;
+
+		    		response.on('data', function(chunk) {
+		    			file.write(chunk);
+		    			downloaded += chunk.length;
+
+		    			console.log('Downloaded: ' + downloaded + '/' + length);
+		    		}).on('end', function() {
+		    			file.end();
 		    			game.extractGame();
 		    		});
 		    	});
@@ -128,7 +145,7 @@ class Game {
     			console.log('Could not download game!');
     		}
     	} catch(err) {
-    		console.log('Could not make game directory! - ' + this._gamePath);
+    		console.log('Could not make game directory! - ' + game._gamePath);
     	}
     }
 

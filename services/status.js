@@ -2,6 +2,10 @@ class StatusService {
     constructor() {
     	this.status = false;
         this.renderStatus();
+
+        this.messageField = $('.status-message');
+        this.statusBar = $('.status');
+        this.progressBar = $('.status-progress-bar');
     }
 
     setStatus(message) {
@@ -15,12 +19,16 @@ class StatusService {
 
     renderStatus() {
         if (this.status != false) {
-            $('.status-message').text(this.status);
-            $('.status').addClass('active');
-        } else {
-            $('.status-message').text('');
-            $('.status').removeClass('active');
+            this.messageField.text(this.status);
+            this.statusBar.addClass('active');
+        } else if (this.status != null) {
+            //this.messageField.text('');
+            //this.statusBar.removeClass('active');
         }
+    }
+
+    downloadingGame(percent) {
+        this.progressBar.width((percent * 100) + '%');
     }
 
     launchingGame(game) {
