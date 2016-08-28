@@ -1,6 +1,9 @@
 const fs = require('fs');
 const Game = require('../models/game.js');
 
+const {remote} = require('electron');
+const {Menu, MenuItem} = remote;
+
 class GameListService {
     constructor(gameName) {
         this.games = new Array();
@@ -34,7 +37,6 @@ class GameListService {
 	}
 
 	sortGamesAlphabetically() {
-		console.log(this.games);
 		this.games = _.orderBy(this.games, function(game) {
 			if (typeof game.config.sortTitle == 'string' && game.config.sortTitle.length > 0) {
 				return game.config.sortTitle;
@@ -52,7 +54,11 @@ class GameListService {
 
 			games.forEach(function(game) {
 				if (game._gameName == gameName) {
-					game.checkIfGameIsInstalled();
+					if (game.isInstalled()) {
+						game.launchGame();
+					} else {
+						game.installGame();
+					}
 				}
 			});
 		// }).on('click', function() {
@@ -63,6 +69,29 @@ class GameListService {
 		// 			showGameOverlay(game);
 		// 		}
 		// 	});
+		});
+
+		$('.game-list .game').on('contextmenu', function() {
+
+			var gameName = $(this).attr('game-name');
+
+			var gameContextMenu = new Menu();
+
+			games.forEach(function(game) {
+
+				if (game._gameName == gameName) {
+					if (game.isInstalled()) {
+						gameContextMenu.append(new MenuItem({
+							label: 'Delete Game',
+							click: () => {
+								game.deleteGame();
+							}
+						}));
+					}
+				}
+			});
+
+			gameContextMenu.popup(remote.getCurrentWindow());
 		});
 	}
 
@@ -101,6 +130,14 @@ class GameListService {
 		this.renderGameList();
 		this.renderGameFilter();
 		this.enableFilterInteraction();
+	}
+
+	updateInstalledGameList() {
+		this.games.forEach(function(game) {
+			game._installed = game.isInstalled();
+		});
+
+		this.renderGameList();
 	}
 
 	getAllGameGenres() {

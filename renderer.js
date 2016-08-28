@@ -20,6 +20,8 @@ var Chat = new ChatService();
 var StatusService = require('./services/status.js');
 var Status = new StatusService();
 
+console.log(Status);
+
 var DistributionService = require('./services/distribution.js');
 var Distribution = new DistributionService();
 

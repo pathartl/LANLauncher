@@ -1,7 +1,12 @@
+const {BrowserWindow} = require('electron').remote;
+
+var CurrentBrowserWindow = BrowserWindow.getAllWindows()[0];
+
 class StatusService {
     constructor() {
     	this.status = false;
         this.renderStatus();
+
 
         this.messageField = $('.status-message');
         this.statusBar = $('.status');
@@ -17,18 +22,39 @@ class StatusService {
         return this.status;
     }
 
-    renderStatus() {
-        if (this.status != false) {
+    renderStatus(clear) {
+        if (clear == true) {
+            console.log('clearing');
+            this.messageField.text('');
+            this.statusBar.removeClass('active');
+        } else if (Array.isArray(this.messageField)) {
             this.messageField.text(this.status);
             this.statusBar.addClass('active');
-        } else if (this.status != null) {
-            //this.messageField.text('');
-            //this.statusBar.removeClass('active');
         }
     }
 
-    downloadingGame(percent) {
+    downloadGame() {
+        this.clearStatus();
+        this.statusBar.addClass('active');
+        this.downloadGameUpdate(0);
+        this.progressBar.parent().addClass('active');
+    }
+
+    downloadGameUpdate(percent) {
         this.progressBar.width((percent * 100) + '%');
+        this.progressBar.css('background-color', this.getProgressBarColor(percent));
+        CurrentBrowserWindow.setProgressBar(percent);
+    }
+
+    extractGame() {
+        CurrentBrowserWindow.setProgressBar(2);
+        this.progressBar.css('background-color', '');
+        this.progressBar.addClass('pulsate');
+    }
+
+    extractGameComplete() {
+        CurrentBrowserWindow.setProgressBar(-1);
+        this.hideStatus();
     }
 
     launchingGame(game) {
@@ -44,7 +70,21 @@ class StatusService {
     }
 
     clearStatus() {
-        this.setStatus(false);
+        this.status = false;
+        this.renderStatus(true);
+    }
+
+    hideStatus() {
+        this.clearStatus();
+        this.progressBar.parent().removeClass('active');
+        this.statusBar.removeClass('active');
+    }
+
+    getProgressBarColor(value) {
+        // Only accepts a floating value from 0-1 instead of a percentage
+        var hue = (value * 120).toString(10);
+
+        return 'hsl(' + hue + ', 100%, 50%)';
     }
 }
 

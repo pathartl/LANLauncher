@@ -1,12 +1,14 @@
 const fs = require('fs');
 const http = require('http');
 const extract = require('extract-zip');
+const rimraf = require('rimraf');
 
 class Game {
     constructor(gameName, config) {
         this._gameName = gameName;
         this._gameConfigPath = Settings.getGameConfigPath(this._gameName);
         this._gamePath = Settings.getGamePath(this._gameName);
+        this._installed = this.isInstalled();
 
         if (_.isObject(config) && config.remoteFile === true) {
         	this.config = config;
@@ -68,7 +70,7 @@ class Game {
     	});
     }
 
-    checkIfGameIsInstalled() {
+    isInstalled() {
     	var isInstalled = false;
 
     	try {
@@ -81,15 +83,18 @@ class Game {
 
     	}
 
-    	if (isInstalled) {
-    		this.launchGame();
-    	} else {
-    		this.installGame();
-    	}
+    	return isInstalled;
     }
 
     installGame() {
     	this.downloadGame();
+    }
+
+    deleteGame() {
+    	rimraf(this._gamePath, function(err) {
+    		console.log('Error: ', err);
+    		GameList.updateInstalledGameList();
+    	});
     }
 
     createGameDirectory() {
@@ -101,15 +106,20 @@ class Game {
     	var source = this._gamePath + '/game.zip';
     	var target = this._gamePath;
 
+    	Status.extractGame();
+
     	extract(source, {
     		dir: target
     	}, function(err) {
     		if (err) {
     			console.log('Failed extracting game!');
+    			console.log(err);
     		} else {
     			console.log('Successfully extracted game!');
     			// Delete downloaded zip file to save on disk space
     			fs.unlinkSync(source);
+    			Status.extractGameComplete();
+    			GameList.updateInstalledGameList();
     		}
     	});
     }
@@ -127,18 +137,30 @@ class Game {
     		try {
 		    	var file = fs.createWriteStream(game._gamePath + '/game.zip');
 
+		    	Status.downloadGame();
+
 		    	var request = http.get(downloadUrl).on('response', function(response) {
 		    		var length = parseInt(response.headers['content-length'], 10);
 		    		var downloaded = 0;
+		    		var startingPercentage = 0.05;
+		    		var percentage = startingPercentage;
 
 		    		response.on('data', function(chunk) {
 		    			file.write(chunk);
+
 		    			downloaded += chunk.length;
 
-		    			console.log('Downloaded: ' + downloaded + '/' + length);
+		    			percentage = downloaded / length;
+
+		    			if (percentage > startingPercentage) {
+		    				Status.downloadGameUpdate(downloaded / length);
+		    			}
 		    		}).on('end', function() {
 		    			file.end();
-		    			game.extractGame();
+
+		    			setTimeout(function() {
+		    				game.extractGame();
+		    			}, 2000);
 		    		});
 		    	});
     		} catch(err) {

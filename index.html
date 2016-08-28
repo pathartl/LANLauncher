@@ -30,8 +30,11 @@
 
                 <div class="game-launch-overlay"></div>
 
-                <div class="status active">
-                    <div class="status-message">Hello World</div>
+                <div class="status">
+                    <div class="status-message"></div>
+                    <div class="status-progress">
+                        <div class="status-progress-bar"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,12 +82,18 @@
                             <span>
                                 <img src="{{_coverPath}}" alt="{{config.title}}">
                             </span>
-                        </div>
                     {{else}}
                         <div class="game-cover game-cover--missing">
                             {{config.title}}
-                        </div>
                     {{/if}}
+
+                        <div class="game-badges">
+                            {{#if _installed}}
+                            {{else}}
+                                <i class="game-badge game-badge--download zmdi zmdi-download"></i>
+                            {{/if}}
+                        </div>
+                    </div>
                 </div>
             {{/each}}
         </script>
