@@ -1,2 +1,5 @@
 games/
 node_modules/
+log.txt
+stderr.txt
+stdout.txt
