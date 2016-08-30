@@ -136,6 +136,12 @@ class GameListService {
 	updateInstalledGameList() {
 		this.games.forEach(function(game) {
 			game._installed = game.isInstalled();
+
+			if (!game._installed && !game.config.remoteFile) {
+				game._available = false;
+			} else {
+				game._available = true;
+			}
 		});
 
 		this.renderGameList();

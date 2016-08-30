@@ -76,25 +76,27 @@
 
         <script id="game-list-template" type="text/x-handlebars-template">
             {{#each games}}
-                <div class="game" game-name="{{_gameName}}">
-                    {{#if _coverPath}}
-                        <div class="game-cover">
-                            <span>
-                                <img src="{{_coverPath}}" alt="{{config.title}}">
-                            </span>
-                    {{else}}
-                        <div class="game-cover game-cover--missing">
-                            {{config.title}}
-                    {{/if}}
+                {{#if _available}}
+                    <div class="game" game-name="{{_gameName}}">
+                        {{#if _coverPath}}
+                            <div class="game-cover">
+                                <span>
+                                    <img src="{{_coverPath}}" alt="{{config.title}}">
+                                </span>
+                        {{else}}
+                            <div class="game-cover game-cover--missing">
+                                {{config.title}}
+                        {{/if}}
 
-                        <div class="game-badges">
-                            {{#if _installed}}
-                            {{else}}
-                                <i class="game-badge game-badge--download zmdi zmdi-download"></i>
-                            {{/if}}
+                            <div class="game-badges">
+                                {{#if _installed}}
+                                {{else}}
+                                    <i class="game-badge game-badge--download zmdi zmdi-download"></i>
+                                {{/if}}
+                            </div>
                         </div>
                     </div>
-                </div>
+                {{/if}}
             {{/each}}
         </script>
 
