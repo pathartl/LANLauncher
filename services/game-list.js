@@ -130,6 +130,7 @@ class GameListService {
 		this.renderGameList();
 		this.renderGameFilter();
 		this.enableFilterInteraction();
+		this.updateInstalledGameList();
 	}
 
 	updateInstalledGameList() {
