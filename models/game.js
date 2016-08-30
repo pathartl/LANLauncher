@@ -145,20 +145,21 @@ class Game {
 		    		var startingPercentage = 0.05;
 		    		var percentage = startingPercentage;
 
+		    		var downloadTick = setInterval(function() {
+		    			Status.downloadGameUpdate(downloaded / length);
+		    		}, 500);
+
 		    		response.on('data', function(chunk) {
 		    			file.write(chunk);
 
 		    			downloaded += chunk.length;
 
 		    			percentage = downloaded / length;
-
-		    			if (percentage > startingPercentage) {
-		    				Status.downloadGameUpdate(downloaded / length);
-		    			}
 		    		}).on('end', function() {
 		    			file.end();
 
 		    			setTimeout(function() {
+		    				clearTimeout(downloadTick);
 		    				game.extractGame();
 		    			}, 2000);
 		    		});
