@@ -57,6 +57,11 @@ class StatusService {
         this.hideStatus();
     }
 
+    extractGameFailed() {
+        CurrentBrowserWindow.setProgressBar(-1);
+        this.hideStatus();
+    }
+
     launchingGame(game) {
         Chat.alertLaunchingGame(game);
 

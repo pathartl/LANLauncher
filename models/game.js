@@ -115,6 +115,9 @@ class Game {
     		if (err) {
     			console.log('Failed extracting game!');
     			console.log(err);
+    			game.deleteGame();
+    			Status.extractGameFailed();
+    			Notify.extractGameFailed(game);
     		} else {
     			console.log('Successfully extracted game!');
     			// Delete downloaded zip file to save on disk space
