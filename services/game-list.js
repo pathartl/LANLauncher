@@ -16,8 +16,11 @@ class GameListService {
 
 	listInstalledGames() {
 		var gameNames = new Array();
-	    console.log(Settings.getGamesDirectory());
 
+		if (!fs.existsSync(Settings.getGamesDirectory())) {
+			fs.mkdirSync(Settings.getGamesDirectory());
+		}
+		
 	    var directories = fs.readdirSync(Settings.getGamesDirectory());
 
 	    directories.forEach(function(file) {
