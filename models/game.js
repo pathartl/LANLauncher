@@ -105,6 +105,7 @@ class Game {
     	console.log('Extracting "' + this.config.title + '"...');
     	var source = this._gamePath + '/game.zip';
     	var target = this._gamePath;
+    	var game = this;
 
     	Status.extractGame();
 
@@ -119,6 +120,7 @@ class Game {
     			// Delete downloaded zip file to save on disk space
     			fs.unlinkSync(source);
     			Status.extractGameComplete();
+    			Notify.extractGameComplete(game);
     			GameList.updateInstalledGameList();
     		}
     	});
