@@ -76,7 +76,7 @@ class StatusService {
 
     hideStatus() {
         this.clearStatus();
-        this.progressBar.removeAttr('style');
+        this.progressBar.removeAttr('style').removeClass('pulsate');
         this.progressBar.parent().removeClass('active');
         this.statusBar.removeClass('active');
     }
