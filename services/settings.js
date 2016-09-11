@@ -44,11 +44,14 @@ class Settings {
 
     getDefaultConfig() {
         return {
-            'gameConfigName': 'game.json',
-            'gamesDir': './games',
-            'chatServer': 'irc.freenode.net',
-            'chatChannels': ['#lanlauncher'],
-            'username': 'LANLauncher'
+            "gameConfigFilename": "game.json",
+            "gamesDirectory": "./games",
+            "chatChannels": ["#lanlauncher"],
+            "username": "LANLauncherClient",
+            "serverAddress": "localhost",
+            "serverPort": 9494,
+            "chatServerAddress": "localhost",
+            "chatServerPort": 6667
         }
     }
 
@@ -56,8 +59,12 @@ class Settings {
         return this.config[setting];
     }
 
+    setSetting(key, value) {
+        this.config[key] = value;
+    }
+
     getGamesDirectory() {
-        var directory = this.config.gamesDir;
+        var directory = this.config.gamesDirectory;
 
         if (directory.indexOf('./') === 0) {
             directory = process.cwd() + directory.substr(1);
@@ -71,7 +78,7 @@ class Settings {
             directory = process.cwd() + directory.substr(1);
         }
 
-        this.config.gamesDir = directory;
+        this.config.gamesDirectory = directory;
 
         this.writeConfig();
     }
@@ -81,7 +88,9 @@ class Settings {
     }
 
     getGameConfigPath(gameName) {
-        return this.getGamesDirectory() + '/' + gameName + '/' + this.config.gameConfigName;
+        return this.getGamesDirectory() + '/' + gameName + '/' + this.config.gameConfigFilename;
+    }
+
     }
 }
 
