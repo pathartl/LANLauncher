@@ -20,7 +20,7 @@ class GameListService {
 		if (!fs.existsSync(Settings.getGamesDirectory())) {
 			fs.mkdirSync(Settings.getGamesDirectory());
 		}
-		
+
 	    var directories = fs.readdirSync(Settings.getGamesDirectory());
 
 	    directories.forEach(function(file) {
@@ -41,7 +41,7 @@ class GameListService {
 
 	sortGamesAlphabetically() {
 		this.games = _.orderBy(this.games, function(game) {
-			if (typeof game.config.sortTitle == 'string' && game.config.sortTitle.length > 0) {
+			if (_.has(game, 'config.sortTitle') && _.isString(game.config.sortTitle) && game.config.sortTitle.length > 0) {
 				return game.config.sortTitle;
 			} else {
 				return game.config.title;
@@ -57,11 +57,7 @@ class GameListService {
 
 			games.forEach(function(game) {
 				if (game._gameName == gameName) {
-					if (game.isInstalled()) {
-						game.launchGame();
-					} else {
-						game.installGame();
-					}
+					game.preFlightCheck();
 				}
 			});
 		// }).on('click', function() {

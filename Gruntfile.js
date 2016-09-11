@@ -41,17 +41,11 @@ module.exports = function(grunt) {
         },
         watch: {
             scss: {
-                files: ['scss/**/*.scss'],
+                files: ['**/*.scss'],
                 tasks: ['build_css'],
                 options: {
                     livereload: true,
                 },
-            },
-            js: {
-                files: ['**/*.js'],
-                options: {
-                    livereload: true,
-                }
             }
         },
         scsslint: {
@@ -69,5 +63,5 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['build_css']);
     grunt.registerTask('lint', ['lint_css']);
     grunt.registerTask('lint_css', ['scsslint']);
-    grunt.registerTask('default', ['watch']);
+    grunt.registerTask('default', ['build_css']);
 };

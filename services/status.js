@@ -7,7 +7,6 @@ class StatusService {
     	this.status = false;
         this.renderStatus();
 
-
         this.messageField = $('.status-message');
         this.statusBar = $('.status');
         this.progressBar = $('.status-progress-bar');
@@ -24,10 +23,9 @@ class StatusService {
 
     renderStatus(clear) {
         if (clear == true) {
-            console.log('clearing');
             this.messageField.text('');
             this.statusBar.removeClass('active');
-        } else if (Array.isArray(this.messageField)) {
+        } else if (this.messageField instanceof jQuery) {
             this.messageField.text(this.status);
             this.statusBar.addClass('active');
         }
@@ -65,7 +63,7 @@ class StatusService {
     launchingGame(game) {
         Chat.alertLaunchingGame(game);
 
-        this.setStatus('Playing ' + game);
+        this.setStatus('Playing ' + game.config.title);
     }
 
     closingGame(game) {

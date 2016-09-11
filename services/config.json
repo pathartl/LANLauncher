@@ -1,8 +1,0 @@
-{
-    "gameConfigName": "game.json",
-    "gamesDir": "./games",
-	"chatServer": "localhost",
-	"chatChannels": ["#lanlauncher"],
-	"username": "LANLauncherClient",
-	"server": "localhost:9494"
-}

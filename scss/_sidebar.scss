@@ -1,0 +1,16 @@
+.sidebar {
+	position: absolute;
+	top: $titlebar-height;
+	right: 0;
+	bottom: 0;
+	width: $sidebar-width;
+	z-index: 300;
+	box-shadow: 10px 10px 181px -10px rgba(0, 0, 0, 1);
+	border-left: 1px solid $border-highlight;
+	outline: 1px solid $black;
+	color: #111;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+	background: $darker-gray;
+	display: flex;
+	flex-direction: column;
+}

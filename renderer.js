@@ -23,6 +23,8 @@ var Status = new StatusService();
 var NotificationService = require('./services/notifications.js');
 var Notify = new NotificationService();
 
+var Alert = require('./services/alert.js');
+
 console.log(Status);
 
 var DistributionService = require('./services/distribution.js');

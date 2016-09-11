@@ -42,7 +42,7 @@ $cover-ratio: 755 / 1080;
 	position: absolute;
 	top: $titlebar-height;
 	left: 0;
-	right: $filter-width;
+	right: $sidebar-width;
 	bottom: 0;
 	overflow-y: scroll;
 
@@ -51,7 +51,7 @@ $cover-ratio: 755 / 1080;
 		position: fixed;
 		top: 0;
 		left: 0;
-		right: $filter-width;
+		right: $sidebar-width;
 		bottom: 0;
 		background: radial-gradient(ellipse at center, rgba(255,255,255,0) 0%,rgba(0,0,0,.5) 100%);
 	}

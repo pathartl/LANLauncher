@@ -1,8 +1,13 @@
 {
-    "gameConfigName": "game.json",
-    "gamesDir": "./games",
-	"chatServer": "localhost",
-	"chatChannels": ["#lanlauncher"],
-	"username": "LANLauncherClient",
-	"server": "localhost:9494"
+    "gameConfigFilename": "game.json",
+    "gamesDirectory": "./games",
+    "chatChannels": [
+        "#lanlauncher"
+    ],
+    "username": "pathartl",
+    "serverAddress": "localhost",
+    "serverPort": "9494",
+    "chatServerAddress": "localhost",
+    "chatServerPort": "6667",
+    "advancedSettingsEnabled": "on"
 }

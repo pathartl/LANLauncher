@@ -30,17 +30,40 @@ class Game {
 
             var data = fs.readFileSync(this._gameConfigPath, 'utf8');
 
-            console.log(data);
-
             return JSON.parse(data);
         } catch (err) {
             console.log('Error: Could not read game config file located at ' + this._gameConfigPath);
         }
     }
 
-    launchGame() {
+    preFlightCheck(ip, port) {
+		// Check if is installed
+		if (this.isInstalled()) {
+            // If is installed, check if we have multiple ways of starting the game
+            if (!_.isUndefined(ip) && !_.isUndefined(port)) {
+                this.joinServer(ip, port);
+            } else {
+                var hasOtherLaunchOptions = _.has(this, 'config.multiplayer.executable') ||
+                                            _.has(this, 'config.multiplayer.client.executable') ||
+                                            _.has(this, 'config.multiplayer.server.executable');
+                if (hasOtherLaunchOptions) {
+                    this.displayLaunchOptions();
+                } else {
+                    this.launchGame();
+                }
+            }
+		} else {
+			this.installGame();
+		}
+    }
+
+    launchGame(alternateExecutable) {
     	var gamePath = this._gamePath;
-        var command = '"' + gamePath + '/' + this.config.executable + '"';
+    	var command = '"' + gamePath + '/' + this.config.executable + '"';
+
+    	if (!_.isUndefined(alternateExecutable)) {
+    		command = '"' + gamePath + '/' + alternateExecutable + '"';
+    	}
 
         if (Array.isArray(this.config.arguments)) {
         	var args = this.config.arguments;
@@ -61,13 +84,157 @@ class Game {
     	log('Launching ' + command);
 
     	var gameTitle = this.config.title;
-    	Status.launchingGame(gameTitle);
+    	Status.launchingGame(this);
 
     	exec(command, {
     		cwd: gamePath
-    	}, function() {
-    		Status.closingGame(gameTitle);
+    	}, () => {
+    		Status.closingGame(this);
     	});
+    }
+
+    launchServer(port) {
+    	var gamePath = this._gamePath;
+    	var command = '"' + gamePath + '/' + this.config.multiplayer.server.executable + '"';
+
+    	if (Array.isArray(this.config.multiplayer.server.arguments)) {
+        	var args = this.config.multiplayer.server.arguments;
+
+        	args.forEach(function(arg, i) {
+        		if (args[i].indexOf('%PORT%') != -1) {
+        			console.log(port);
+        			args[i] = args[i].replace('%PORT%', port);
+        		}
+        	});
+
+        	command = command + ' ' + args.join(' ');
+        }
+
+        log('Starting server ' + command);
+
+        Chat.alertHostingGame(this, Settings.getLocalIP(), port);
+        Status.launchingGame(this);
+
+        exec(command, {
+        	cwd: gamePath
+        }, () => {
+            Status.closingGame(this);
+        });
+    }
+
+    joinServer(ip, port) {
+    	var gamePath = this._gamePath;
+    	var command = '"' + gamePath + '/' + this.config.multiplayer.client.executable + '"';
+
+    	if (Array.isArray(this.config.multiplayer.client.arguments)) {
+        	var args = this.config.multiplayer.client.arguments;
+
+        	args.forEach(function(arg, i) {
+        		if (args[i].indexOf('%PORT%') != -1) {
+        			args[i] = args[i].replace('%PORT%', port);
+        		}
+
+        		if (args[i].indexOf('%IP%') != -1) {
+        			args[i] = args[i].replace('%IP%', ip);
+        		}
+        	});
+
+        	command = command + ' ' + args.join(' ');
+        }
+
+        log('Joining server ' + command);
+
+        exec(command, {
+        	cwd: gamePath
+        });
+    }
+
+    displayLaunchOptions() {
+    	var game = this;
+    	var alertOptions = new Array();
+
+    	if (_.has(game, 'config.multiplayer.executable')) {
+    		alertOptions.push({
+    			name: 'multiplayer',
+    			fields: [
+    				{
+    					type: 'button',
+    					name: 'launch-multiplayer',
+    					label: _.has(game, 'config.multiplayer.executableLabel') ? game.multiplayer.executableLabel : 'Play Multiplayer'
+    				}
+    			],
+    			submit: function() {
+    				game.launchGame(game.multiplayer.executable);
+    			}
+    		});
+    	}
+
+		if (_.has(game, 'config.multiplayer.client.executable')) {
+			alertOptions.push({
+				name: 'multiplayer-client',
+				label: 'Join Game',
+				fields: [
+					{
+						type: 'text',
+						name: 'join-ip',
+						placeholder: '0.0.0.0',
+						label: 'Host IP Address'
+					},
+					{
+						type: 'text',
+						name: 'join-port',
+						label: 'Host Port'
+					},
+					{
+						type: 'button',
+						name: 'join-button',
+						label: 'Join Game'
+					}
+				],
+				submit: function(submission) {
+					game.joinServer(submission.fields['join-ip'], submission.fields['join-port']);
+				}
+			});
+		}
+
+		if (_.has(game, 'config.multiplayer.server.executable')) {
+			alertOptions.push({
+				name: 'multiplayer-server',
+				label: 'Host Game',
+				fields: [
+					{
+						type: 'text',
+						name: 'host-port',
+						label: 'Host Port',
+						value: 9900
+					},
+					{
+						type: 'button',
+						name: 'host-button',
+						label: 'Host Game'
+					}
+				],
+				submit: function(submission) {
+					game.launchServer(submission.fields['host-port']);
+				}
+			});
+		}
+
+		alertOptions.push({
+			name: 'normal-launch',
+			fields: [
+				{
+					type: 'button',
+					name: 'launch-game-button',
+					label: _.has(game, 'config.executableLabel') ? game.config.executableLabel : 'Launch Game'
+				}
+			],
+			submit: function() {
+				game.launchGame();
+			}
+		});
+
+		var launchAlert = new Alert(alertOptions);
     }
 
     isInstalled() {
@@ -184,57 +351,6 @@ class Game {
     	} catch (err) {
     		return false;
     	}
-    }
-
-    launchServer(port) {
-    	var gamePath = this._gamePath;
-    	var command = '"' + gamePath + '/' + this.config.multiplayer.server.executable + '"';
-
-    	if (Array.isArray(this.config.multiplayer.server.arguments)) {
-        	var args = this.config.multiplayer.server.arguments;
-
-        	args.forEach(function(arg, i) {
-        		if (args[i].indexOf('%PORT%') != -1) {
-        			console.log(port);
-        			args[i] = args[i].replace('%PORT%', port);
-        		}
-        	});
-
-        	command = command + ' ' + args.join(' ');
-        }
-
-        log('Starting server ' + command);
-
-        exec(command, {
-        	cwd: gamePath
-        });
-    }
-
-    joinServer(ip, port) {
-    	var gamePath = this._gamePath;
-    	var command = '"' + gamePath + '/' + this.config.multiplayer.client.executable + '"';
-
-    	if (Array.isArray(this.config.multiplayer.client.arguments)) {
-        	var args = this.config.multiplayer.client.arguments;
-
-        	args.forEach(function(arg, i) {
-        		if (args[i].indexOf('%PORT%') != -1) {
-        			args[i] = args[i].replace('%PORT%', port);
-        		}
-
-        		if (args[i].indexOf('%IP%') != -1) {
-        			args[i] = args[i].replace('%IP%', ip);
-        		}
-        	});
-
-        	command = command + ' ' + args.join(' ');
-        }
-
-        log('Joining server ' + command);
-
-        exec(command, {
-        	cwd: gamePath
-        });
     }
 
 	showGameOverlay(game) {

@@ -1,15 +1,18 @@
-$filter-width: 200px;
+$sidebar-width: 200px;
 $titlebar-height: 32px;
 
 @import 'reset';
 @import 'colors';
 @import 'utility';
 @import 'window';
+@import 'sidebar';
 @import 'grid';
 @import 'game';
 @import 'filter';
 @import 'launch-overlay';
+@import 'settings-overlay';
 @import 'status-bar';
+@import 'chat';
 
 body,
 html {
