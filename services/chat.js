@@ -6,8 +6,16 @@ class Chat {
     	this.connect();
         this.messagesContainer = $('.chat-messages');
         this.userListContainer = $('.chat-users');
+        this.messageBox = $('.chat-message-box input');
 
         addEventListener('settingsSaved', this.reconnect.bind(this));
+
+        $('.chat').submit((e) => {
+            e.preventDefault();
+
+            this.sendMessage(this.messageBox.val());
+            this.messageBox.val('');
+        });
     }
 
     getConnectionInfo() {
@@ -146,8 +154,10 @@ class Chat {
     }
 
     sendMessage(message) {
-    	this.client.say(this._channels[0], message);
-        this.appendMessage(this._username, null, message);
+        this._channels.forEach((channel) => {
+            this.client.say(channel, message);
+            this.appendMessage(this._username, null, message);
+        });
     }
 }
 
