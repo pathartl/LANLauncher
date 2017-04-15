@@ -18,6 +18,7 @@
             <div class="window-titlebar">
                 <div class="window-title"></div>
                 <div class="window-action-buttons">
+                    <div class="btn window-action-button window-action-button--settings"><i class="zmdi zmdi-settings"></i></div>
                     <div class="btn window-action-button window-action-button--minimize"><i class="zmdi zmdi-window-minimize"></i></div>
                     <div class="btn window-action-button window-action-button--maximize"><i class="zmdi zmdi-window-maximize"></i></div>
                     <div class="btn window-action-button window-action-button--restore hidden"><i class="zmdi zmdi-window-restore"></i></div>
@@ -25,21 +26,11 @@
                 </div>
             </div>
             <div class="window-content">
-                <div class="game-list"></div>
-
-                <div class="alert-overlay"></div>
-                <div class="settings-overlay"></div>
-
                 <div class="status">
                     <div class="status-message"></div>
                     <div class="status-progress">
                         <div class="status-progress-bar"></div>
                     </div>
-                </div>
-
-                <div class="sidebar">
-                    <div class="game-filter"></div>
-                    <div class="chat-users"></div>
                 </div>
 
                 <form class="chat">
@@ -48,12 +39,28 @@
                         <input type="text" name="chat-message-box">
                     </div>
                 </form>
+
+                <div class="game-list"></div>
+
+                <div class="sidebar">
+                    <div class="game-filter"></div>
+                    <div class="chat-users"></div>
+                </div>
+
+                <div class="alert-overlay"></div>
+                <div class="settings-overlay"></div>
             </div>
         </div>
 
         <script id="chat-message-template" type="text/x-handlebars-template">
             <div class="chat-message">
                 {{#if from}}<span class="chat-message-username">{{from}}</span>: {{/if}}<span class="chat-message-text">{{{message}}}</span>
+            </div>
+        </script>
+
+        <script id="chat-action-template" type="text/x-handlebars-template">
+            <div class="chat-action">
+                {{#if from}}* <span class="chat-message-username">{{from}}</span> {{/if}}<span class="chat-message-text">{{{message}}}</span>
             </div>
         </script>
 
@@ -103,7 +110,7 @@
         <script id="game-list-template" type="text/x-handlebars-template">
             {{#each games}}
                 {{#if _available}}
-                    <div class="game" game-name="{{_gameName}}">
+                    <div class="game {{#if _installed}}game--installed{{/if}}" game-name="{{_gameName}}">
                         {{#if _coverPath}}
                             <div class="game-cover">
                                 <span>
@@ -132,8 +139,10 @@
                     <form name="{{name}}">
                         {{#each fields}}
                             {{#equals type "text"}}
-                                <label for="alert-{{name}}">{{label}}</label>
-                                <input type="text" id="alert-{{name}}" placeholder="{{placeholder}}" name="{{name}}" {{#if value}}value="{{value}}"{{/if}}>
+                                <div class="input-group">
+                                    <label for="alert-{{name}}">{{label}}</label>
+                                    <input type="text" id="alert-{{name}}" placeholder="{{placeholder}}" name="{{name}}" {{#if value}}value="{{value}}"{{/if}}>
+                                </div>
                             {{/equals}}
                             {{#equals type "button"}}
                                 <button id="alert-{{name}}" name="{{name}}">{{label}}</button>
@@ -165,8 +174,9 @@
                         <input type="text" class="form-control" id="serverPort" name="serverPort" value="{{serverPort}}">
                     </div>
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="advancedSettingsEnabled" onchange="Settings.toggleAdvancedSettings(event)" {{#if advancedSettingsEnabled}}checked{{/if}}> Enable advanced settings
+                        <input type="checkbox" id="advancedSettingsEnabled" name="advancedSettingsEnabled" onchange="Settings.toggleAdvancedSettings(event)" {{#if advancedSettingsEnabled}}checked{{/if}}>
+                        <label for="advancedSettingsEnabled">
+                            Enable advanced settings
                         </label>
                     </div>
                     {{#if advancedSettingsEnabled}}
@@ -197,6 +207,7 @@
         </script>
 
         <script src="renderer.js"></script>
+        <script src="node_modules/selectize/dist/js/standalone/selectize.min.js"></script>
 
     </body>
 </html>

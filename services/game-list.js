@@ -241,7 +241,6 @@ class GameListService {
 		];
 
 		var templateHtml = compileTemplate('#game-filter-template', {filters: filter})
-		console.log(templateHtml);
 
 		$('.game-filter').html(templateHtml);
 	}
@@ -329,8 +328,6 @@ class GameListService {
 		var filters = $('.filter');
 		var gameFilter = this.gameFilter;
 
-		console.log(filters);
-
 		filters.each(function(i, filter) {
 			var inputs = $(filter).find('input, select');
 			var name = $(filter).attr('name');
@@ -351,9 +348,11 @@ class GameListService {
 
 
 				GameList.filterGames();
-
-				console.log(gameFilter);
 			});
+		});
+
+		$('select').selectize({
+			allowEmptyOption: true
 		});
 	}
 

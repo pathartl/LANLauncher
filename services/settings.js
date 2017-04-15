@@ -28,6 +28,10 @@ class Settings {
                 this.config = defaults;
 
                 this.writeConfig();
+
+                setTimeout(() => {
+                    this.openSettingsUI();
+                }, 1000);
             } catch (err) {
                 console.log('Error: Could not open config.json for write')
             }
@@ -49,7 +53,7 @@ class Settings {
             "gameConfigFilename": "game.json",
             "gamesDirectory": "./games",
             "chatChannels": ["#lanlauncher"],
-            "username": "LANLauncherClient",
+            "username": "Player",
             "serverAddress": "localhost",
             "serverPort": 9494,
             "chatServerAddress": "localhost",
@@ -136,7 +140,9 @@ class Settings {
         this.loadConfig();
         this.renderSettingsUI();
 
-        $('.settings-overlay').show().addClass('active');
+        console.log('opening settings ui')
+
+        $('.settings-overlay').addClass('active');
     }
 
     renderSettingsUI() {

@@ -28,13 +28,11 @@ class AlertService {
 			});
 		});
 
-		$('.alert-overlay').fadeIn(250);
+		$('.alert-overlay').addClass('active');
     }
 
     dismiss() {
-    	$('.alert-overlay').fadeOut(250, function() {
-    		$(this).html('');
-    	});
+    	$('.alert-overlay').removeClass('active').html('');
     }
 
 }

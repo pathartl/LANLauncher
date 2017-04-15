@@ -2,23 +2,43 @@ $chat-message-box-height: 32px;
 
 .chat-users {
 	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	margin-left: -15px;
+	margin-right: -15px;
+}
+
+.chat-user {
+	background: darken($darker-gray, .1);
+	height: $chat-message-box-height;
+	padding: 5px 15px;
 }
 
 .chat {
 	position: absolute;
 	left: 0;
 	right: $sidebar-width;
-	bottom: 0;
-	height: 250px;
+	bottom: -1 * $chat-height;
+	height: $chat-height;
 	background: $dark-gray;
 	font-family: monospace;
 	color: $white;
 	z-index: 700;
+	transition: .25s bottom;
 
 	* {
 		user-select: all;
 		-webkit-user-select: all;
 	}
+
+	&.active {
+		bottom: 0;
+	}
+}
+
+.status.active ~ .chat.active {
+	bottom: $status-height;
 }
 
 .chat-messages {
@@ -29,6 +49,11 @@ $chat-message-box-height: 32px;
 	bottom: $chat-message-box-height;
 	overflow-y: scroll;
 	padding: 8px 10px;
+
+	game {
+		text-decoration: underline;
+		cursor: pointer;
+	}
 }
 
 .chat-message-box {
@@ -41,5 +66,9 @@ $chat-message-box-height: 32px;
 	input {
 		width: 100%;
 		height: 100%;
+		padding-left: 8px;
+		padding-right: 8px;
+		background: rgba(0, 0, 0, .5);
+		color: $white;
 	}
 }

@@ -1,5 +1,10 @@
-.alert-overlay {
+.alert-overlay,
+.settings-overlay,
+%overlay {
 	display: none;
+	opacity: 0;
+	transition: .25s opacity;
+	transition-delay: .25s;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -9,13 +14,17 @@
 	z-index: 500;
 
 	&-window {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
 		color: $white;
 		background: $darker-gray;
 		border: 1px solid $border-highlight;
 		outline: 1px solid $black;
+		padding: 15px;
+	}
+
+	&.active {
+		display: flex;
+		opacity: 1;
+		align-items: center;
+		justify-content: center;
 	}
 }

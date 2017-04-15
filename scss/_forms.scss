@@ -1,0 +1,99 @@
+select,
+input,
+.selectize-input {
+	background: rgba(0, 0, 0, .5);
+	border: 1px solid $black;
+	padding: 5px;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, .1);
+	height: $input-height;
+	color: #ccc;
+	text-shadow: 0 2px 3px #000;
+}
+
+.selectize-control {
+	position: relative;
+}
+
+.selectize-input input[type="text"] {
+	display: none;
+}
+
+.selectize-dropdown {
+	position: absolute;
+	top: 32px;
+	left: 0 !important;
+	right: 0 !important;
+	background: $dark-gray;
+	box-shadow: 0 4px 17px 2px rgba(0, 0, 0, .5);
+	text-shadow: 0 1px 0 #000;
+	z-index: 10;
+}
+
+.option {
+	height: $input-height;
+	padding: 5px 10px;
+	box-sizing: border-box;
+
+	&.active {
+		background: $darker-gray;
+		border-bottom: 1px solid rgba(255, 255, 255, .2);
+		border-top: 1px solid $black;
+		padding-top: 4px;
+	}
+}
+
+input[type="checkbox"] {
+	display: none;
+
+	~ label {
+		padding-left: 20px;
+		position: relative;
+
+		&::before {
+			content: '';
+			display: block;
+			background: $dark-gray;
+			border: 1px solid $black;
+			box-shadow: 0 1px 0 rgba(255, 255, 255, .1);
+			width: 10px;
+			height: 10px;
+			position: absolute;
+			top: 50%;
+			left: 0;
+			margin-top: -5px;
+		}
+	}
+
+	&:checked ~ label::after {
+		content: '✔';
+		position: absolute;
+		top: 50%;
+		left: -1px;
+		transform: translateY(-50%);
+	}
+}
+
+.form-group,
+.checkbox {
+	margin-bottom: 8px;
+
+	label {
+		height: 32px;
+		padding-top: 5px;
+		display: inline-block;
+		margin-right: 16px;
+	}
+
+	input {
+		float: right;
+	}
+}
+
+button {
+	padding: 7px 16px;
+	background: rgba(0, 0, 0, .5);
+	color: #ccc;
+	border: 1px solid rgba(255, 255, 255, .1);
+	font-size: 16px;
+	float: right;
+}

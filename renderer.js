@@ -58,6 +58,10 @@ function enableWindowInteractionButtons() {
 	$(document).ready(function() {
 		var window = remote.getCurrentWindow();
 
+		$('.window-action-button--settings').on('click', function() {
+			Settings.openSettingsUI();
+		});
+
 		$('.window-action-button--maximize').on('click', function() {
 			$('.window-action-button--maximize').addClass('hidden');
 			$('.window-action-button--restore').removeClass('hidden');
@@ -75,6 +79,7 @@ function enableWindowInteractionButtons() {
 		});
 
 		$('.window-action-button--close').on('click', function() {
+			Chat.disconnect();
 			window.close();
 		});
 

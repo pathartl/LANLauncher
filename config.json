@@ -4,10 +4,10 @@
     "chatChannels": [
         "#lanlauncher"
     ],
-    "username": "pathartl",
-    "serverAddress": "localhost",
+    "username": "DoctorDalek",
+    "serverAddress": "10.0.1.197",
     "serverPort": "9494",
     "chatServerAddress": "localhost",
-    "chatServerPort": "6667",
+    "chatServerPort": 6667,
     "advancedSettingsEnabled": "on"
 }

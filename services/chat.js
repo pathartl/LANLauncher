@@ -4,13 +4,18 @@ class Chat {
     constructor() {
         this.getConnectionInfo();
     	this.connect();
+        this.listenForActivationKey();
+
+        this.chatContainer = $('.chat');
         this.messagesContainer = $('.chat-messages');
         this.userListContainer = $('.chat-users');
         this.messageBox = $('.chat-message-box input');
 
+        this.activationKeyCode = 96 // ~
+
         addEventListener('settingsSaved', this.reconnect.bind(this));
 
-        $('.chat').submit((e) => {
+        this.chatContainer.submit((e) => {
             e.preventDefault();
 
             this.sendMessage(this.messageBox.val());
@@ -42,7 +47,7 @@ class Chat {
         });
 
         this.client.addListener('action', (from, to, message) => {
-            this.messageReceived(from, to, message);
+            this.actionReceived(from, to, message);
         });
 
         this.registerUserListUpdates();
@@ -60,6 +65,16 @@ class Chat {
         this.disconnect();
         this.getConnectionInfo();
         this.connect();
+    }
+
+    listenForActivationKey() {
+        $(document).keypress((e) => {
+            if (e.keyCode == this.activationKeyCode) {
+                e.preventDefault();
+                this.chatContainer.toggleClass('active');
+                this.messageBox.focus();
+            }
+        });
     }
 
     registerUserListUpdates() {
@@ -81,11 +96,14 @@ class Chat {
     }
 
     messageReceived(from, to, message) {
-        // Create temporary element for easy parsing
-        var el = $('<div />').html(message);
-
         this.appendMessage(from, to, message);
+    }
 
+    actionReceived(from, message) {
+        this.appendAction(from, message);
+    }
+
+    enableChatMessageInteraction() {
         this.messagesContainer.find('game').each((i, gameLink) => {
             $(gameLink).unbind('click');
 
@@ -113,6 +131,21 @@ class Chat {
         this._chatLog.push(messageToAppend);
         var templateHtml = compileTemplate('#chat-message-template', messageToAppend);
         this.messagesContainer.append(templateHtml);
+        this.messagesContainer.scrollTop(this.messagesContainer.get(0).scrollHeight);
+        this.enableChatMessageInteraction();
+    }
+
+    appendAction(from, message) {
+        var actionToAppend = {
+            from: from,
+            message: message
+        }
+
+        this._chatLog.push(actionToAppend);
+        var templateHtml = compileTemplate('#chat-action-template', actionToAppend);
+        this.messagesContainer.append(templateHtml);
+        this.messagesContainer.scrollTop(this.messagesContainer.get(0).scrollHeight);
+        this.enableChatMessageInteraction();
     }
 
     displayUsers() {
@@ -131,33 +164,31 @@ class Chat {
             text: game.config.title
         });
 
-        this._channels.forEach((channel) => {
-            this.client.say(channel, 'started a multiplayer game for ' + gameLink.get(0).outerHTML);
-        });
+        this.sendAction('started a multiplayer game for ' + gameLink.get(0).outerHTML)
     }
 
     alertLaunchingGame(game) {
-        this._channels.forEach((channel) => {
-            this.client.say(channel, 'is playing ' + game.config.title);
-        });
+        this.sendAction('is playing ' + game.config.title);
     }
 
     alertClosingGame(game) {
-        this._channels.forEach((channel) => {
-            this.client.say(channel, 'stopped playing ' + game.config.title);
-        });
+        this.sendAction('stopped playing ' + game.config.title);
     }
 
     sendAction(message) {
-        this.client.action(this._channels[0], message);
-        this.appendMessage(null, null, '* ' + this._username + ' ' + message);
+        this._channels.forEach((channel) => {
+            this.client.action(channel, message);
+        });
+
+        this.appendAction(this._username, message);
     }
 
     sendMessage(message) {
         this._channels.forEach((channel) => {
             this.client.say(channel, message);
-            this.appendMessage(this._username, null, message);
         });
+
+        this.appendMessage(this._username, null, message);
     }
 }
 
